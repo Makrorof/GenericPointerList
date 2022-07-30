@@ -6,7 +6,7 @@ import "sync"
 //          Guarded List       //
 /////////////////////////////////
 
-//List containing only pointer variables
+//List protected by mutex and containing only pointer variables
 type GuardedPointerList[T any] interface {
 	ToArray() []*T
 	//Returns the number of elements in a sequence.
