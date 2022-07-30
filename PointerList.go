@@ -4,18 +4,34 @@ package PointerList
 //        Pointer List         //
 /////////////////////////////////
 
+//List containing only pointer variables
 type PointerList[T any] interface {
 	ToArray() []*T
+	//Returns the number of elements in a sequence.
 	Count() int
+	//Gets the element at the specified index.
 	Get(index int) *T
+	//Adds an object to the end of the PointerList[T].
 	Add(item *T)
+	//Adds the elements of the specified collection to the end of the PointerList[T].
 	AddRange(item []*T)
-	Remove(targetItem *T)
+	//Removes the first occurrence of a specific object from the PointerList[T].
+	Remove(targetItem *T) bool
+	//Removes the element at the specified index of the PointerList[T].
+	RemoveAt(index int) bool
+	//Removes all the elements that match the conditions defined by the specified predicate.
+	RemoveAll(f RemovePointerFunc[T])
+	//Removes all elements from the PointerList[T].
 	Clear()
+	//Determines whether an element is in the PointerList[T].
 	Contains(targetItem *T) bool
+	//Inserts an element into the PointerList[T] at the specified index.
 	Insert(targetItem *T, targetIndex int) error
+	//Inserts the elements of a collection into the PointerList[T] at the specified index.
 	InsertRange(targetItems []*T, targetIndex int) error
+	//Reverses the order of the elements in the entire PointerList[T].
 	Reverse()
+	//Sorts the elements in the entire PointerList[T] using the specified SortPointerFunc[T].
 	Sort(f SortPointerFunc[T])
 
 	//Capacity() //TODO: ...
@@ -31,6 +47,7 @@ func NewPointerList[T any]() PointerList[T] {
 	}
 }
 
+//Gets the element at the specified index.
 func (l *pointerList[T]) Get(index int) *T {
 	if index >= len(l.list) || index < 0 {
 		return nil
@@ -39,43 +56,63 @@ func (l *pointerList[T]) Get(index int) *T {
 	return l.list[index]
 }
 
+//Returns the number of elements in a sequence.
 func (l *pointerList[T]) Count() int {
 	return len(l.list)
 }
 
+//Adds an object to the end of the PointerList[T].
 func (l *pointerList[T]) Add(item *T) {
 	l.list = append(l.list, item)
 }
 
+//Adds the elements of the specified collection to the end of the PointerList[T].
 func (l *pointerList[T]) AddRange(item []*T) {
 	l.list = append(l.list, item...)
 }
 
-func (l *pointerList[T]) Remove(targetItem *T) {
+//Removes the first occurrence of a specific object from the PointerList[T].
+func (l *pointerList[T]) Remove(targetItem *T) bool {
 	for i := 0; i < len(l.list); i++ {
 		if l.list[i] == targetItem {
 			l.list = append(l.list[:i], l.list[i+1:]...)
-			return
+			return true
 		}
 	}
+
+	return false
 }
 
-func (l *pointerList[T]) RemoveAt(index int) {
+//Removes the element at the specified index of the PointerList[T].
+func (l *pointerList[T]) RemoveAt(index int) bool {
 	if index >= len(l.list) || index < 0 {
-		return
+		return false
 	}
 
 	l.list = append(l.list[:index], l.list[index+1:]...)
+	return true
+}
+
+//Removes all the elements that match the conditions defined by the specified predicate.
+func (l *pointerList[T]) RemoveAll(f RemovePointerFunc[T]) {
+	for i, i2 := 0, 0; i < len(l.list); i, i2 = i+1, i2+1 {
+		if f(l.list[i], i2) {
+			l.list = append(l.list[:i], l.list[i+1:]...)
+			i--
+		}
+	}
 }
 
 func (l *pointerList[T]) ToArray() []*T {
 	return l.list
 }
 
+//Removes all elements from the PointerList[T].
 func (l *pointerList[T]) Clear() {
 	l.list = make([]*T, 0)
 }
 
+//Determines whether an element is in the PointerList[T].
 func (l *pointerList[T]) Contains(targetItem *T) bool {
 	for i := 0; i < len(l.list); i++ {
 		if l.list[i] == targetItem {
@@ -86,6 +123,7 @@ func (l *pointerList[T]) Contains(targetItem *T) bool {
 	return false
 }
 
+//Inserts an element into the PointerList[T] at the specified index.
 func (l *pointerList[T]) Insert(targetItem *T, targetIndex int) error {
 	if targetIndex > len(l.list) || targetIndex < 0 {
 		return GetErrorf(IndexOutOfRange, len(l.list), len(l.list))
@@ -107,6 +145,7 @@ func (l *pointerList[T]) Insert(targetItem *T, targetIndex int) error {
 	return nil
 }
 
+//Inserts the elements of a collection into the PointerList[T] at the specified index.
 func (l *pointerList[T]) InsertRange(targetItems []*T, targetIndex int) error {
 	if targetIndex > len(l.list) || targetIndex < 0 {
 		return GetErrorf(IndexOutOfRange, len(l.list), len(l.list))
@@ -134,6 +173,7 @@ func (l *pointerList[T]) InsertRange(targetItems []*T, targetIndex int) error {
 	return nil
 }
 
+//Reverses the order of the elements in the entire PointerList[T].
 func (l *pointerList[T]) Reverse() {
 	if len(l.list) == 0 {
 		return
@@ -144,6 +184,7 @@ func (l *pointerList[T]) Reverse() {
 	}
 }
 
+//Sorts the elements in the entire PointerList[T] using the specified SortPointerFunc[T].
 func (l *pointerList[T]) Sort(f SortPointerFunc[T]) {
 	for i2 := 0; i2 < len(l.list); i2++ {
 		for i := 0; i < len(l.list); i++ {

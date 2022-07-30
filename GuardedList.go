@@ -6,24 +6,42 @@ import "sync"
 //          Guarded List       //
 /////////////////////////////////
 
+//List containing only pointer variables
 type GuardedPointerList[T any] interface {
 	ToArray() []*T
+	//Returns the number of elements in a sequence.
 	Count() int
+	//Gets the element at the specified index.
 	Get(index int) *T
+	//Adds an object to the end of the GuardedPointerList[T].
 	Add(item *T)
+	//Adds the elements of the specified collection to the end of the GuardedPointerList[T].
 	AddRange(item []*T)
-	Remove(targetItem *T)
+	//Removes the first occurrence of a specific object from the GuardedPointerList[T].
+	Remove(targetItem *T) bool
+	//Removes the element at the specified index of the GuardedPointerList[T].
+	RemoveAt(index int) bool
+	//Removes all the elements that match the conditions defined by the specified predicate.
+	RemoveAll(f RemovePointerFunc[T])
+	//Removes all elements from the GuardedPointerList[T].
 	Clear()
+	//Determines whether an element is in the GuardedPointerList[T].
 	Contains(targetItem *T) bool
+	//Inserts an element into the GuardedPointerList[T] at the specified index.
 	Insert(targetItem *T, targetIndex int) error
+	//Inserts the elements of a collection into the GuardedPointerList[T] at the specified index.
 	InsertRange(targetItems []*T, targetIndex int) error
+	//Reverses the order of the elements in the entire GuardedPointerList[T].
 	Reverse()
+	//Sorts the elements in the entire GuardedPointerList[T] using the specified SortPointerFunc[T].
 	Sort(f SortPointerFunc[T])
+
+	//Capacity() //TODO: ...
 }
 
 type guardedPointerList[T any] struct {
-	locker sync.Mutex
 	list   []*T
+	locker sync.Mutex
 }
 
 func NewGuardedPointerList[T any]() GuardedPointerList[T] {
@@ -32,6 +50,7 @@ func NewGuardedPointerList[T any]() GuardedPointerList[T] {
 	}
 }
 
+//Gets the element at the specified index.
 func (l *guardedPointerList[T]) Get(index int) *T {
 	if index >= len(l.list) || index < 0 {
 		return nil
@@ -43,10 +62,12 @@ func (l *guardedPointerList[T]) Get(index int) *T {
 	return l.list[index]
 }
 
+//Returns the number of elements in a sequence.
 func (l *guardedPointerList[T]) Count() int {
 	return len(l.list)
 }
 
+//Adds an object to the end of the GuardedPointerList[T].
 func (l *guardedPointerList[T]) Add(item *T) {
 	l.locker.Lock()
 	defer l.locker.Unlock()
@@ -54,6 +75,7 @@ func (l *guardedPointerList[T]) Add(item *T) {
 	l.list = append(l.list, item)
 }
 
+//Adds the elements of the specified collection to the end of the GuardedPointerList[T].
 func (l *guardedPointerList[T]) AddRange(item []*T) {
 	l.locker.Lock()
 	defer l.locker.Unlock()
@@ -61,33 +83,52 @@ func (l *guardedPointerList[T]) AddRange(item []*T) {
 	l.list = append(l.list, item...)
 }
 
-func (l *guardedPointerList[T]) Remove(targetItem *T) {
+//Removes the first occurrence of a specific object from the GuardedPointerList[T].
+func (l *guardedPointerList[T]) Remove(targetItem *T) bool {
 	l.locker.Lock()
 	defer l.locker.Unlock()
 
 	for i := 0; i < len(l.list); i++ {
 		if l.list[i] == targetItem {
 			l.list = append(l.list[:i], l.list[i+1:]...)
-			return
+			return true
 		}
 	}
+
+	return false
 }
 
-func (l *guardedPointerList[T]) RemoveAt(index int) {
+//Removes the element at the specified index of the GuardedPointerList[T].
+func (l *guardedPointerList[T]) RemoveAt(index int) bool {
 	if index >= len(l.list) || index < 0 {
-		return
+		return false
 	}
 
 	l.locker.Lock()
 	defer l.locker.Unlock()
 
 	l.list = append(l.list[:index], l.list[index+1:]...)
+	return true
+}
+
+//Removes all the elements that match the conditions defined by the specified predicate.
+func (l *guardedPointerList[T]) RemoveAll(f RemovePointerFunc[T]) {
+	l.locker.Lock()
+	defer l.locker.Unlock()
+
+	for i, i2 := 0, 0; i < len(l.list); i, i2 = i+1, i2+1 {
+		if f(l.list[i], i2) {
+			l.list = append(l.list[:i], l.list[i+1:]...)
+			i--
+		}
+	}
 }
 
 func (l *guardedPointerList[T]) ToArray() []*T {
 	return l.list
 }
 
+//Removes all elements from the GuardedPointerList[T].
 func (l *guardedPointerList[T]) Clear() {
 	l.locker.Lock()
 	defer l.locker.Unlock()
@@ -95,6 +136,7 @@ func (l *guardedPointerList[T]) Clear() {
 	l.list = make([]*T, 0)
 }
 
+//Determines whether an element is in the GuardedPointerList[T].
 func (l *guardedPointerList[T]) Contains(targetItem *T) bool {
 	l.locker.Lock()
 	defer l.locker.Unlock()
@@ -108,6 +150,7 @@ func (l *guardedPointerList[T]) Contains(targetItem *T) bool {
 	return false
 }
 
+//Inserts an element into the GuardedPointerList[T] at the specified index.
 func (l *guardedPointerList[T]) Insert(targetItem *T, targetIndex int) error {
 	if targetIndex > len(l.list) || targetIndex < 0 {
 		return GetErrorf(IndexOutOfRange, len(l.list), len(l.list))
@@ -132,6 +175,7 @@ func (l *guardedPointerList[T]) Insert(targetItem *T, targetIndex int) error {
 	return nil
 }
 
+//Inserts the elements of a collection into the GuardedPointerList[T] at the specified index.
 func (l *guardedPointerList[T]) InsertRange(targetItems []*T, targetIndex int) error {
 	if targetIndex > len(l.list) || targetIndex < 0 {
 		return GetErrorf(IndexOutOfRange, len(l.list), len(l.list))
@@ -162,6 +206,7 @@ func (l *guardedPointerList[T]) InsertRange(targetItems []*T, targetIndex int) e
 	return nil
 }
 
+//Reverses the order of the elements in the entire GuardedPointerList[T].
 func (l *guardedPointerList[T]) Reverse() {
 	if len(l.list) == 0 {
 		return
@@ -175,6 +220,7 @@ func (l *guardedPointerList[T]) Reverse() {
 	}
 }
 
+//Sorts the elements in the entire GuardedPointerList[T] using the specified SortPointerFunc[T].
 func (l *guardedPointerList[T]) Sort(f SortPointerFunc[T]) {
 	l.locker.Lock()
 	defer l.locker.Unlock()
