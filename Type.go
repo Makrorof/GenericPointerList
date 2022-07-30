@@ -8,3 +8,6 @@ type RemovePointerFunc[T any] func(current *T, index int) bool
 
 //Example: return true; => finded, return false; => skip
 type FindPointerFunc[T any] func(current *T) bool
+
+//Example: return true; => skip, return false; => direct return false;
+type TrueForAllPointerFunc[T any] func(current *T) bool
