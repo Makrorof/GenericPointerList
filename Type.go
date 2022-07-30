@@ -5,3 +5,6 @@ type SortPointerFunc[T any] func(left *T, right *T) bool
 
 //Example: current.IsNull()-> true => deleted, current.IsNull()-> false => skip
 type RemovePointerFunc[T any] func(current *T, index int) bool
+
+//Example: return true; => finded, return false; => skip
+type FindPointerFunc[T any] func(current *T) bool

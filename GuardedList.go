@@ -35,6 +35,10 @@ type GuardedPointerList[T any] interface {
 	Reverse()
 	//Sorts the elements in the entire GuardedPointerList[T] using the specified SortPointerFunc[T].
 	Sort(f SortPointerFunc[T])
+	//Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire GuardedPointerList[T].
+	Find(f FindPointerFunc[T]) *T
+	//Retrieves all the elements that match the conditions defined by the specified predicate.
+	FindAll(f FindPointerFunc[T]) []*T
 
 	//Capacity() //TODO: ...
 }
@@ -235,4 +239,34 @@ func (l *guardedPointerList[T]) Sort(f SortPointerFunc[T]) {
 			}*/
 		}
 	}
+}
+
+//Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire GuardedPointerList[T].
+func (l *guardedPointerList[T]) Find(f FindPointerFunc[T]) *T {
+	l.locker.Lock()
+	defer l.locker.Unlock()
+
+	for i := 0; i < len(l.list); i++ {
+		if f(l.list[i]) {
+			return l.list[i]
+		}
+	}
+
+	return nil
+}
+
+//Retrieves all the elements that match the conditions defined by the specified predicate.
+func (l *guardedPointerList[T]) FindAll(f FindPointerFunc[T]) []*T {
+	l.locker.Lock()
+	defer l.locker.Unlock()
+
+	retList := make([]*T, 0)
+
+	for i := 0; i < len(l.list); i++ {
+		if f(l.list[i]) {
+			retList = append(retList, l.list[i])
+		}
+	}
+
+	return retList
 }
