@@ -37,6 +37,10 @@ type PointerList[T any] interface {
 	Find(f FindPointerFunc[T]) *T
 	//Retrieves all the elements that match the conditions defined by the specified predicate.
 	FindAll(f FindPointerFunc[T]) []*T
+	//Determines whether every element in the PointerList[T] matches the conditions defined by the specified predicate.
+	TrueForAll(f TrueForAllPointerFunc[T]) bool
+	//Find and remove
+	FindAndRemove(f FindPointerFunc[T]) *T
 
 	//Capacity() //TODO: ...
 }
@@ -77,24 +81,12 @@ func (l *pointerList[T]) AddRange(item []*T) {
 
 //Removes the first occurrence of a specific object from the PointerList[T].
 func (l *pointerList[T]) Remove(targetItem *T) bool {
-	for i := 0; i < len(l.list); i++ {
-		if l.list[i] == targetItem {
-			l.list = append(l.list[:i], l.list[i+1:]...)
-			return true
-		}
-	}
-
-	return false
+	return l.remove(targetItem)
 }
 
 //Removes the element at the specified index of the PointerList[T].
 func (l *pointerList[T]) RemoveAt(index int) bool {
-	if index >= len(l.list) || index < 0 {
-		return false
-	}
-
-	l.list = append(l.list[:index], l.list[index+1:]...)
-	return true
+	return l.removeAt(index)
 }
 
 //Removes all the elements that match the conditions defined by the specified predicate.
@@ -224,4 +216,54 @@ func (l *pointerList[T]) FindAll(f FindPointerFunc[T]) []*T {
 	}
 
 	return retList
+}
+
+//Determines whether every element in the PointerList[T] matches the conditions defined by the specified predicate.
+func (l *pointerList[T]) TrueForAll(f TrueForAllPointerFunc[T]) bool {
+	for i := 0; i < len(l.list); i++ {
+		if !f(l.list[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+//Find and remove
+func (l *pointerList[T]) FindAndRemove(f FindPointerFunc[T]) *T {
+	for i := 0; i < len(l.list); i++ {
+		if f(l.list[i]) {
+			target := l.list[i]
+			l.removeAt(i)
+			return target
+		}
+	}
+
+	return nil
+}
+
+/////////////////////////////////
+//            PRIVATE          //
+/////////////////////////////////
+
+//Removes the element at the specified index of the PointerList[T].
+func (l *pointerList[T]) removeAt(index int) bool {
+	if index >= len(l.list) || index < 0 {
+		return false
+	}
+
+	l.list = append(l.list[:index], l.list[index+1:]...)
+	return true
+}
+
+//Removes the first occurrence of a specific object from the PointerList[T].
+func (l *pointerList[T]) remove(targetItem *T) bool {
+	for i := 0; i < len(l.list); i++ {
+		if l.list[i] == targetItem {
+			l.list = append(l.list[:i], l.list[i+1:]...)
+			return true
+		}
+	}
+
+	return false
 }
