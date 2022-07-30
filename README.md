@@ -214,7 +214,7 @@
 
 	log.Println("----------------")
 	log.Println("After")
-	log.Println("----------------")
+	//log.Println("----------------")
 
 	playersFound := playerList.FindAll(func(current *Player) bool {
 		return current.Health > 60
@@ -224,11 +224,13 @@
 		return current.Health == 60
 	})
 
+	log.Println("-------playerFound---------")
+
 	log.Printf("Player ID:%d, Player Health:%f", playerFound.ID, playerFound.Health)
 
-	log.Println("----------------")
+	log.Println("-------playersFound---------")
 
 	for _, currentPlayer := range playersFound {
 		log.Printf("Player ID:%d, Player Health:%f", currentPlayer.ID, currentPlayer.Health)
 	}
-![image](https://user-images.githubusercontent.com/59788044/181996381-f4f47b89-9727-440c-8eb3-a6d13a604e03.png)
+![image](https://user-images.githubusercontent.com/59788044/181996420-ccb1fe3d-2522-4e73-b461-025b2c1d8aef.png)
