@@ -34,7 +34,8 @@
 		log.Printf("Player ID:%d, Player Health:%f", currentPlayer.ID, currentPlayer.Health)
 	}
 	
-	![image](https://user-images.githubusercontent.com/59788044/181878662-76e61142-94ac-42ab-8e0e-4af2ac62b1a0.png)
+	
+![image](https://user-images.githubusercontent.com/59788044/181878728-104924b5-5a58-49b0-87ef-ffe39092d6c4.png)
 
 
 	
