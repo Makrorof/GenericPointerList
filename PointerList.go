@@ -46,6 +46,7 @@ type PointerList[T any] interface {
 }
 
 type pointerList[T any] struct {
+	BASE
 	list []*T
 }
 
@@ -57,6 +58,11 @@ func NewPointerList[T any]() PointerList[T] {
 
 //Gets the element at the specified index.
 func (l *pointerList[T]) Get(index int) *T {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	if index >= len(l.list) || index < 0 {
 		return nil
 	}
@@ -66,31 +72,61 @@ func (l *pointerList[T]) Get(index int) *T {
 
 //Returns the number of elements in a sequence.
 func (l *pointerList[T]) Count() int {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	return len(l.list)
 }
 
 //Adds an object to the end of the PointerList[T].
 func (l *pointerList[T]) Add(item *T) {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	l.list = append(l.list, item)
 }
 
 //Adds the elements of the specified collection to the end of the PointerList[T].
 func (l *pointerList[T]) AddRange(item []*T) {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	l.list = append(l.list, item...)
 }
 
 //Removes the first occurrence of a specific object from the PointerList[T].
 func (l *pointerList[T]) Remove(targetItem *T) bool {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	return l.remove(targetItem)
 }
 
 //Removes the element at the specified index of the PointerList[T].
 func (l *pointerList[T]) RemoveAt(index int) bool {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	return l.removeAt(index)
 }
 
 //Removes all the elements that match the conditions defined by the specified predicate.
 func (l *pointerList[T]) RemoveAll(f RemovePointerFunc[T]) {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	for i, i2 := 0, 0; i < len(l.list); i, i2 = i+1, i2+1 {
 		if f(l.list[i], i2) {
 			l.list = append(l.list[:i], l.list[i+1:]...)
@@ -100,16 +136,31 @@ func (l *pointerList[T]) RemoveAll(f RemovePointerFunc[T]) {
 }
 
 func (l *pointerList[T]) ToArray() []*T {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	return l.list
 }
 
 //Removes all elements from the PointerList[T].
 func (l *pointerList[T]) Clear() {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	l.list = make([]*T, 0)
 }
 
 //Determines whether an element is in the PointerList[T].
 func (l *pointerList[T]) Contains(targetItem *T) bool {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	for i := 0; i < len(l.list); i++ {
 		if l.list[i] == targetItem {
 			return true
@@ -121,6 +172,11 @@ func (l *pointerList[T]) Contains(targetItem *T) bool {
 
 //Inserts an element into the PointerList[T] at the specified index.
 func (l *pointerList[T]) Insert(targetItem *T, targetIndex int) error {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	if targetIndex > len(l.list) || targetIndex < 0 {
 		return GetErrorf(IndexOutOfRange, len(l.list), len(l.list))
 	}
@@ -143,6 +199,11 @@ func (l *pointerList[T]) Insert(targetItem *T, targetIndex int) error {
 
 //Inserts the elements of a collection into the PointerList[T] at the specified index.
 func (l *pointerList[T]) InsertRange(targetItems []*T, targetIndex int) error {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	if targetIndex > len(l.list) || targetIndex < 0 {
 		return GetErrorf(IndexOutOfRange, len(l.list), len(l.list))
 	} else if len(targetItems) == 0 {
@@ -171,6 +232,11 @@ func (l *pointerList[T]) InsertRange(targetItems []*T, targetIndex int) error {
 
 //Reverses the order of the elements in the entire PointerList[T].
 func (l *pointerList[T]) Reverse() {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	if len(l.list) == 0 {
 		return
 	}
@@ -182,6 +248,11 @@ func (l *pointerList[T]) Reverse() {
 
 //Sorts the elements in the entire PointerList[T] using the specified SortPointerFunc[T].
 func (l *pointerList[T]) Sort(f SortPointerFunc[T]) {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	for i2 := 0; i2 < len(l.list); i2++ {
 		for i := 0; i < len(l.list); i++ {
 			if f(l.list[i], l.list[i2]) {
@@ -196,6 +267,11 @@ func (l *pointerList[T]) Sort(f SortPointerFunc[T]) {
 
 //Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire PointerList[T].
 func (l *pointerList[T]) Find(f FindPointerFunc[T]) *T {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	for i := 0; i < len(l.list); i++ {
 		if f(l.list[i]) {
 			return l.list[i]
@@ -207,6 +283,11 @@ func (l *pointerList[T]) Find(f FindPointerFunc[T]) *T {
 
 //Retrieves all the elements that match the conditions defined by the specified predicate.
 func (l *pointerList[T]) FindAll(f FindPointerFunc[T]) []*T {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	retList := make([]*T, 0)
 
 	for i := 0; i < len(l.list); i++ {
@@ -220,6 +301,11 @@ func (l *pointerList[T]) FindAll(f FindPointerFunc[T]) []*T {
 
 //Determines whether every element in the PointerList[T] matches the conditions defined by the specified predicate.
 func (l *pointerList[T]) TrueForAll(f TrueForAllPointerFunc[T]) bool {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	for i := 0; i < len(l.list); i++ {
 		if !f(l.list[i]) {
 			return false
@@ -231,6 +317,11 @@ func (l *pointerList[T]) TrueForAll(f TrueForAllPointerFunc[T]) bool {
 
 //Find and remove
 func (l *pointerList[T]) FindAndRemove(f FindPointerFunc[T]) *T {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
 	for i := 0; i < len(l.list); i++ {
 		if f(l.list[i]) {
 			target := l.list[i]
