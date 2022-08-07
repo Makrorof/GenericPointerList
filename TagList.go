@@ -29,6 +29,12 @@ type TagList[T any] interface {
 	//Returns the number of elements in a sequence.
 	Count() int
 
+	//Total count
+	TotalCount() int
+
+	//Returns the number of elements in a sequence.
+	MapCount() map[string]int
+
 	//Returns the number of elements in a sequence using the specified CountSelectTagListFunc[T]
 	CountSelect(f CountSelectTagListFunc[T]) int
 }
@@ -45,6 +51,26 @@ func NewTagList[T any]() TagList[T] {
 
 func (l *tagList[T]) ToMap() map[string]PointerList[T] {
 	return l.mapList
+}
+
+func (l *tagList[T]) MapCount() map[string]int {
+	count := make(map[string]int)
+
+	for key, value := range l.mapList {
+		count[key] = value.Count()
+	}
+
+	return count
+}
+
+func (l *tagList[T]) TotalCount() int {
+	count := 0
+
+	for _, value := range l.mapList {
+		count += value.Count()
+	}
+
+	return count
 }
 
 func (l *tagList[T]) Count() int {

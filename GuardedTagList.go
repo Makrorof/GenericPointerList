@@ -31,6 +31,12 @@ type GuardedTagList[T any] interface {
 	//Returns the number of elements in a sequence.
 	Count() int
 
+	//Total count
+	TotalCount() int
+
+	//Returns the number of elements in a sequence.
+	MapCount() map[string]int
+
 	//Returns the number of elements in a sequence using the specified CountSelectTagListFunc[T]
 	CountSelect(f CountSelectTagListFunc[T]) int
 }
@@ -44,6 +50,26 @@ func NewGuardedTagList[T any]() GuardedTagList[T] {
 	return &guardedTagList[T]{
 		mapList: make(map[string]GuardedPointerList[T]),
 	}
+}
+
+func (l *guardedTagList[T]) MapCount() map[string]int {
+	count := make(map[string]int)
+
+	for key, value := range l.mapList {
+		count[key] = value.Count()
+	}
+
+	return count
+}
+
+func (l *guardedTagList[T]) TotalCount() int {
+	count := 0
+
+	for _, value := range l.mapList {
+		count += value.Count()
+	}
+
+	return count
 }
 
 func (l *guardedTagList[T]) Count() int {
