@@ -6,6 +6,8 @@ package PointerList
 
 //List containing only pointer variables
 type PointerList[T any] interface {
+	BASE
+
 	ToArray() []*T
 	//Returns the number of elements in a sequence.
 	Count() int

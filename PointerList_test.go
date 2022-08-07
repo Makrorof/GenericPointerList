@@ -57,3 +57,12 @@ func TestMutex(t *testing.T) {
 		t.Logf("forCount(%d) != normalList(%d)", forCount, normalList.Count())
 	}
 }
+
+func TestTagList(t *testing.T) {
+
+	tagList := NewTagList[int]()
+
+	var testVal int = 31
+
+	tagList.Add("Test", &testVal)
+}
