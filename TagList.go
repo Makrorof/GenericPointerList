@@ -42,6 +42,9 @@ type TagList[T any] interface {
 
 	//Returns the number of elements in a sequence using the specified CountSelectTagListFunc[T]
 	CountSelect(f CountSelectTagListFunc[T]) int
+
+	//Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire PointerList[T].
+	Find(f FindPointerFunc[T]) *T
 }
 
 type tagList[T any] struct {
@@ -178,4 +181,17 @@ func (l *tagList[T]) RemoveAt(key string, index int) bool {
 	}
 
 	return l.mapList[key].RemoveAt(index)
+}
+
+//Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire PointerList[T].
+func (l *tagList[T]) Find(f FindPointerFunc[T]) *T {
+	for _, list := range l.mapList {
+		for _, item := range list.ToArray() {
+			if f(item) {
+				return item
+			}
+		}
+	}
+
+	return nil
 }
