@@ -47,6 +47,8 @@ type GuardedTagList[T any] interface {
 
 	//Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire PointerList[T].
 	Find(f FindPointerFunc[T]) *T
+
+	GetNextBefore(key string, f BeforeTagListFunc[T]) *T
 }
 
 type guardedTagList[T any] struct {
