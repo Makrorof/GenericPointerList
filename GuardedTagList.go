@@ -7,6 +7,8 @@ type GuardedTagList[T any] interface {
 
 	Get(key string) GuardedPointerList[T]
 
+	GetNext(key string) *T
+
 	//Adds a tag with the specified key and value to the list.
 	Add(key string, value *T)
 
@@ -122,6 +124,17 @@ func (l *guardedTagList[T]) Get(key string) GuardedPointerList[T] {
 	defer l.locker.Unlock()
 
 	return l.mapList[key]
+}
+
+func (l *guardedTagList[T]) GetNext(key string) *T {
+	l.locker.Lock()
+	defer l.locker.Unlock()
+
+	if l.mapList[key] == nil {
+		return nil
+	}
+
+	return l.mapList[key].GetNext()
 }
 
 //Adds a tag with the specified key and value to the list.

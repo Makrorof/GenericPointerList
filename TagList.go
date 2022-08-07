@@ -5,6 +5,8 @@ type TagList[T any] interface {
 
 	Get(key string) PointerList[T]
 
+	GetNext(key string) *T
+
 	//Adds a tag with the specified key and value to the list.
 	Add(key string, value *T)
 
@@ -113,6 +115,14 @@ func (l *tagList[T]) MapCountSelect(f CountSelectTagListFunc[T]) map[string]int 
 
 func (l *tagList[T]) Get(key string) PointerList[T] {
 	return l.mapList[key]
+}
+
+func (l *tagList[T]) GetNext(key string) *T {
+	if l.mapList[key] == nil {
+		return nil
+	}
+
+	return l.mapList[key].GetNext()
 }
 
 //Adds a tag with the specified key and value to the list.
