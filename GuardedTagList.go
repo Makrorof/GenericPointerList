@@ -244,6 +244,11 @@ func (l *guardedTagList[T]) GetNextBefore(key string, f BeforeTagListFunc[T]) *T
 
 	for i := 0; i < l.mapList[key].Count(); i++ { //l.mapList[key].Count() => MaxCount
 		currentItem := l.mapList[key].GetNext()
+
+		if currentItem == nil {
+			break
+		}
+
 		if f(currentItem) {
 			return currentItem
 		}
