@@ -13,6 +13,8 @@ type PointerList[T any] interface {
 	Count() int
 	//Gets the element at the specified index.
 	Get(index int) *T
+	//Gets the element at next
+	GetNext() *T
 	//Adds an object to the end of the PointerList[T].
 	Add(item *T)
 	//Adds the elements of the specified collection to the end of the PointerList[T].
@@ -49,7 +51,8 @@ type PointerList[T any] interface {
 
 type pointerList[T any] struct {
 	BASE
-	list []*T
+	list      []*T
+	lastIndex int
 }
 
 func NewPointerList[T any]() PointerList[T] {
@@ -70,6 +73,26 @@ func (l *pointerList[T]) Get(index int) *T {
 	}
 
 	return l.list[index]
+}
+
+func (l *pointerList[T]) GetNext() *T {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
+	if len(l.list) == 0 {
+		return nil
+	}
+
+	if l.lastIndex >= len(l.list) {
+		l.lastIndex = 0
+	}
+
+	selectedItem := l.list[l.lastIndex]
+	l.lastIndex++
+
+	return selectedItem
 }
 
 //Returns the number of elements in a sequence.
