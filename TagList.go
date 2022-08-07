@@ -25,6 +25,12 @@ type TagList[T any] interface {
 
 	//Removes the element at the specified index of the TagList.
 	RemoveAt(key string, index int) bool
+
+	//Returns the number of elements in a sequence.
+	Count() int
+
+	//Returns the number of elements in a sequence using the specified CountSelectTagListFunc[T]
+	CountSelect(f CountSelectTagListFunc[T]) int
 }
 
 type tagList[T any] struct {
@@ -39,6 +45,24 @@ func NewTagList[T any]() TagList[T] {
 
 func (l *tagList[T]) ToMap() map[string]PointerList[T] {
 	return l.mapList
+}
+
+func (l *tagList[T]) Count() int {
+	return len(l.mapList)
+}
+
+func (l *tagList[T]) CountSelect(f CountSelectTagListFunc[T]) int {
+	count := 0
+
+	for key, list := range l.mapList {
+		for index, current := range list.ToArray() {
+			if f(key, index, current) {
+				count++
+			}
+		}
+	}
+
+	return count
 }
 
 func (l *tagList[T]) Get(key string) PointerList[T] {

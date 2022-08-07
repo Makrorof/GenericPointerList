@@ -11,3 +11,6 @@ type FindPointerFunc[T any] func(current *T) bool
 
 //Example: return true; => skip, return false; => direct return false;
 type TrueForAllPointerFunc[T any] func(current *T) bool
+
+//Example: return true; => add count, return false; => skip;
+type CountSelectTagListFunc[T any] func(key string, index int, current *T) bool

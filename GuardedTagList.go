@@ -27,6 +27,12 @@ type GuardedTagList[T any] interface {
 
 	//Removes the element at the specified index of the GuardedTagList.
 	RemoveAt(key string, index int) bool
+
+	//Returns the number of elements in a sequence.
+	Count() int
+
+	//Returns the number of elements in a sequence using the specified CountSelectTagListFunc[T]
+	CountSelect(f CountSelectTagListFunc[T]) int
 }
 
 type guardedTagList[T any] struct {
@@ -38,6 +44,24 @@ func NewGuardedTagList[T any]() GuardedTagList[T] {
 	return &guardedTagList[T]{
 		mapList: make(map[string]GuardedPointerList[T]),
 	}
+}
+
+func (l *guardedTagList[T]) Count() int {
+	return len(l.mapList)
+}
+
+func (l *guardedTagList[T]) CountSelect(f CountSelectTagListFunc[T]) int {
+	count := 0
+
+	for key, list := range l.mapList {
+		for index, current := range list.ToArray() {
+			if f(key, index, current) {
+				count++
+			}
+		}
+	}
+
+	return count
 }
 
 func (l *guardedTagList[T]) ToMap() map[string]GuardedPointerList[T] {
