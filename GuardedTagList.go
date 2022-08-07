@@ -38,6 +38,9 @@ type GuardedTagList[T any] interface {
 	MapCount() map[string]int
 
 	//Returns the number of elements in a sequence using the specified CountSelectTagListFunc[T]
+	MapCountSelect(f CountSelectTagListFunc[T]) map[string]int
+
+	//Returns the number of elements in a sequence using the specified CountSelectTagListFunc[T]
 	CountSelect(f CountSelectTagListFunc[T]) int
 }
 
@@ -85,6 +88,23 @@ func (l *guardedTagList[T]) CountSelect(f CountSelectTagListFunc[T]) int {
 				count++
 			}
 		}
+	}
+
+	return count
+}
+
+func (l *guardedTagList[T]) MapCountSelect(f CountSelectTagListFunc[T]) map[string]int {
+	count := make(map[string]int)
+
+	for key, list := range l.mapList {
+		curCount := 0
+		for index, current := range list.ToArray() {
+			if f(key, index, current) {
+				curCount++
+			}
+		}
+
+		count[key] = curCount
 	}
 
 	return count
