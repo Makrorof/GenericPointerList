@@ -84,18 +84,7 @@ func (l *pointerList[T]) GetNext() *T {
 		defer l.end()
 	}
 
-	if len(l.list) == 0 {
-		return nil
-	}
-
-	if l.lastIndex >= len(l.list) {
-		l.lastIndex = 0
-	}
-
-	selectedItem := l.list[l.lastIndex]
-	l.lastIndex++
-
-	return selectedItem
+	return l.getNext()
 }
 
 //Returns the number of elements in a sequence.
@@ -368,7 +357,7 @@ func (l *pointerList[T]) GetNextBefore(f BeforeListFunc[T]) *T {
 	}
 
 	for i := 0; i < len(l.list); i++ { //l.mapList[key].Count() => MaxCount
-		currentItem := l.GetNext()
+		currentItem := l.getNext()
 
 		if currentItem == nil {
 			break
@@ -406,4 +395,19 @@ func (l *pointerList[T]) remove(targetItem *T) bool {
 	}
 
 	return false
+}
+
+func (l *pointerList[T]) getNext() *T {
+	if len(l.list) == 0 {
+		return nil
+	}
+
+	if l.lastIndex >= len(l.list) {
+		l.lastIndex = 0
+	}
+
+	selectedItem := l.list[l.lastIndex]
+	l.lastIndex++
+
+	return selectedItem
 }
