@@ -224,8 +224,8 @@ func (l *guardedTagList[T]) Find(f FindPointerFunc[T]) *T {
 	defer l.locker.Unlock()
 
 	for _, list := range l.mapList {
-		for _, item := range list.ToArray() {
-			if f(item) {
+		for index, item := range list.ToArray() {
+			if f(index, item) {
 				return item
 			}
 		}

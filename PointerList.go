@@ -301,7 +301,7 @@ func (l *pointerList[T]) Find(f FindPointerFunc[T]) *T {
 	}
 
 	for i := 0; i < len(l.list); i++ {
-		if f(l.list[i]) {
+		if f(i, l.list[i]) {
 			return l.list[i]
 		}
 	}
@@ -319,7 +319,7 @@ func (l *pointerList[T]) FindAll(f FindPointerFunc[T]) []*T {
 	retList := make([]*T, 0)
 
 	for i := 0; i < len(l.list); i++ {
-		if f(l.list[i]) {
+		if f(i, l.list[i]) {
 			retList = append(retList, l.list[i])
 		}
 	}
@@ -351,7 +351,7 @@ func (l *pointerList[T]) FindAndRemove(f FindPointerFunc[T]) *T {
 	}
 
 	for i := 0; i < len(l.list); i++ {
-		if f(l.list[i]) {
+		if f(i, l.list[i]) {
 			target := l.list[i]
 			l.removeAt(i)
 			return target

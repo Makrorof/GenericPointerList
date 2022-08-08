@@ -186,8 +186,8 @@ func (l *tagList[T]) RemoveAt(key string, index int) bool {
 //Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire PointerList[T].
 func (l *tagList[T]) Find(f FindPointerFunc[T]) *T {
 	for _, list := range l.mapList {
-		for _, item := range list.ToArray() {
-			if f(item) {
+		for index, item := range list.ToArray() {
+			if f(index, item) {
 				return item
 			}
 		}
