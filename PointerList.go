@@ -15,6 +15,9 @@ type PointerList[T any] interface {
 	Get(index int) *T
 	//Gets the element at next
 	GetNext() *T
+	//Gets the element at next
+	GetNextBefore(f BeforeListFunc[T]) *T
+
 	//Adds an object to the end of the PointerList[T].
 	Add(item *T)
 	//Adds the elements of the specified collection to the end of the PointerList[T].
@@ -352,6 +355,27 @@ func (l *pointerList[T]) FindAndRemove(f FindPointerFunc[T]) *T {
 			target := l.list[i]
 			l.removeAt(i)
 			return target
+		}
+	}
+
+	return nil
+}
+
+func (l *pointerList[T]) GetNextBefore(f BeforeListFunc[T]) *T {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
+	for i := 0; i < len(l.list); i++ { //l.mapList[key].Count() => MaxCount
+		currentItem := l.GetNext()
+
+		if currentItem == nil {
+			break
+		}
+
+		if f(currentItem) {
+			return currentItem
 		}
 	}
 
