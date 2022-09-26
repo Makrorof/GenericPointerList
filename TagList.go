@@ -202,15 +202,14 @@ func (l *tagList[T]) Find(f FindPointerFunc[T]) *T {
 //Loop
 func (l *tagList[T]) Foreach(f ForeachTagListFunc[T]) {
 	for key, list := range l.mapList {
-		curList := list.ToArray()
-		for i := 0; i < len(curList); i++ {
+		for i := 0; i < list.Count(); i++ {
 
 			removeItem := func() {
 				list.RemoveAtNoSafe(i)
 				i--
 			}
 
-			if !f(key, i, curList[i], removeItem) {
+			if !f(key, i, list.Get(i), removeItem) {
 				return
 			}
 		}

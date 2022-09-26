@@ -1,6 +1,7 @@
 package PointerList
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"testing"
@@ -65,4 +66,30 @@ func TestTagList(t *testing.T) {
 	var testVal int = 31
 
 	tagList.Add("Test", &testVal)
+}
+
+func TestForeachTagList(t *testing.T) {
+	list := NewGuardedTagList[int]()
+
+	for i := 0; i < 25; i++ {
+		newI := i
+		list.Add(fmt.Sprint(i), &newI)
+	}
+
+	list.Foreach(func(key string, index int, current *int, removeCurItem func()) bool {
+		log.Println("[", key, "] =>", index, ". =>", *current)
+
+		if index%2 == 0 {
+			removeCurItem()
+		}
+
+		return true
+	})
+
+	log.Println("Listele")
+
+	list.Foreach(func(key string, index int, current *int, removeCurItem func()) bool {
+		log.Println("[", key, "] =>", index, ". =>", *current)
+		return true
+	})
 }
