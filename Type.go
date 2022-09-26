@@ -21,4 +21,4 @@ type BeforeListFunc[T any] func(current *T) bool
 type ForeachListFunc[T any] func(index int, current *T) bool
 
 //Example: return true -> next, return false -> break
-type ForeachTagListFunc[T any] func(key string, index int, current *T) bool
+type ForeachTagListFunc[T any] func(key string, index int, current *T, removeCurItem func()) bool

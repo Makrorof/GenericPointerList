@@ -26,6 +26,10 @@ type PointerList[T any] interface {
 	Remove(targetItem *T) bool
 	//Removes the element at the specified index of the PointerList[T].
 	RemoveAt(index int) bool
+	//Removes the first occurrence of a specific object from the PointerList[T]. NoSafe
+	RemoveNoSafe(targetItem *T) bool
+	//Removes the element at the specified index of the PointerList[T]. NoSafe
+	RemoveAtNoSafe(index int) bool
 	//Removes all the elements that match the conditions defined by the specified predicate.
 	RemoveAll(f RemovePointerFunc[T])
 	//Removes all elements from the PointerList[T].
@@ -135,6 +139,16 @@ func (l *pointerList[T]) RemoveAt(index int) bool {
 		defer l.end()
 	}
 
+	return l.removeAt(index)
+}
+
+//Removes the first occurrence of a specific object from the PointerList[T]. NoSafe
+func (l *pointerList[T]) RemoveNoSafe(targetItem *T) bool {
+	return l.remove(targetItem)
+}
+
+//Removes the element at the specified index of the PointerList[T]. NoSafe
+func (l *pointerList[T]) RemoveAtNoSafe(index int) bool {
 	return l.removeAt(index)
 }
 

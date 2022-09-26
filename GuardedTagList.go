@@ -266,8 +266,15 @@ func (l *guardedTagList[T]) Foreach(f ForeachTagListFunc[T]) {
 	defer l.locker.Unlock()
 
 	for key, list := range l.mapList {
-		for index, item := range list.ToArray() {
-			if !f(key, index, item) {
+		curList := list.ToArray()
+		for i := 0; i < len(curList); i++ {
+
+			removeItem := func() {
+				list.RemoveAtNoSafe(i)
+				i--
+			}
+
+			if !f(key, i, curList[i], removeItem) {
 				return
 			}
 		}
