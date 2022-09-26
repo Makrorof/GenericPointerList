@@ -45,6 +45,9 @@ type TagList[T any] interface {
 
 	//Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire PointerList[T].
 	Find(f FindPointerFunc[T]) *T
+
+	//Loop
+	Foreach(f ForeachTagListFunc[T])
 }
 
 type tagList[T any] struct {
@@ -194,4 +197,15 @@ func (l *tagList[T]) Find(f FindPointerFunc[T]) *T {
 	}
 
 	return nil
+}
+
+//Loop
+func (l *tagList[T]) Foreach(f ForeachTagListFunc[T]) {
+	for key, list := range l.mapList {
+		for index, item := range list.ToArray() {
+			if !f(key, index, item) {
+				return
+			}
+		}
+	}
 }

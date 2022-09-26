@@ -16,3 +16,9 @@ type TrueForAllPointerFunc[T any] func(current *T) bool
 type CountSelectTagListFunc[T any] func(key string, index int, current *T) bool
 
 type BeforeListFunc[T any] func(current *T) bool
+
+//Example: return true -> next, return false -> break
+type ForeachListFunc[T any] func(index int, current *T) bool
+
+//Example: return true -> next, return false -> break
+type ForeachTagListFunc[T any] func(key string, index int, current *T) bool

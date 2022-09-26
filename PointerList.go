@@ -48,7 +48,8 @@ type PointerList[T any] interface {
 	TrueForAll(f TrueForAllPointerFunc[T]) bool
 	//Find and remove
 	FindAndRemove(f FindPointerFunc[T]) *T
-
+	//Loop
+	Foreach(f ForeachListFunc[T])
 	//Capacity() //TODO: ...
 }
 
@@ -369,6 +370,19 @@ func (l *pointerList[T]) GetNextBefore(f BeforeListFunc[T]) *T {
 	}
 
 	return nil
+}
+
+func (l *pointerList[T]) Foreach(f ForeachListFunc[T]) {
+	if l.BASE != nil {
+		l.start()
+		defer l.end()
+	}
+
+	for i := 0; i < len(l.list); i++ {
+		if !f(i, l.list[i]) {
+			break
+		}
+	}
 }
 
 /////////////////////////////////

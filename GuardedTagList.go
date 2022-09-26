@@ -49,6 +49,9 @@ type GuardedTagList[T any] interface {
 	Find(f FindPointerFunc[T]) *T
 
 	GetNextBefore(key string, f BeforeListFunc[T]) *T
+
+	//Loop
+	Foreach(f ForeachTagListFunc[T])
 }
 
 type guardedTagList[T any] struct {
@@ -255,4 +258,18 @@ func (l *guardedTagList[T]) GetNextBefore(key string, f BeforeListFunc[T]) *T {
 	}
 
 	return nil
+}
+
+//Loop
+func (l *guardedTagList[T]) Foreach(f ForeachTagListFunc[T]) {
+	l.locker.Lock()
+	defer l.locker.Unlock()
+
+	for key, list := range l.mapList {
+		for index, item := range list.ToArray() {
+			if !f(key, index, item) {
+				return
+			}
+		}
+	}
 }
