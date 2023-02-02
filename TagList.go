@@ -68,7 +68,11 @@ func (l *tagList[T]) MapCount() map[string]int {
 	count := make(map[string]int)
 
 	for key, value := range l.mapList {
-		count[key] = value.Count()
+		if value != nil {
+			count[key] = value.Count()
+		} else {
+			count[key] = 0
+		}
 	}
 
 	return count
