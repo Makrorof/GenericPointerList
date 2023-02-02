@@ -228,7 +228,7 @@
 
 	log.Printf("Player ID:%d, Player Health:%f", playerFound.ID, playerFound.Health)
 
-	log.Println("-------playersFound---------")
+	log.Println("-------playersFound---------") 
 
 	for _, currentPlayer := range playersFound {
 		log.Printf("Player ID:%d, Player Health:%f", currentPlayer.ID, currentPlayer.Health)
